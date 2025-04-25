@@ -2,11 +2,8 @@ package org.example
 
 fun main() {
     val code = """
-        fun main(): num {
-            num i = 3;
-            log(i);
-            i = 5 + 3;
-            log(i);
+        fun sum(num num1, num num2): num {
+            return num1 + num2
         }
     """.trimIndent()
 

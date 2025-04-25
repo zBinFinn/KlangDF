@@ -2,6 +2,7 @@ package org.example.tree
 
 import org.example.tokenizer.Token
 import org.example.tokenizer.TokenType
+import kotlin.math.exp
 
 class TreeGen (
     tokens: List<Token>
@@ -32,20 +33,31 @@ class TreeGen (
             }
             TokenType.K_LOG -> parseLogStatement()
             TokenType.K_FUN -> parseFunctionStatement()
+            TokenType.K_RETURN -> parseReturnStatement()
             else -> parseExpressionStatement()
         }
     }
 
+    private fun parseReturnStatement(): ReturnStatement {
+        expectAndConsume(TokenType.K_RETURN)
+        val expression = parseExpression()
+        return ReturnStatement(expression)
+    }
     private fun parseFunctionStatement(): FunctionStatement {
         expectAndConsume(TokenType.K_FUN)
         val identifier = expectAndConsume(TokenType.IDENTIFIER).lexme
         expectAndConsume(TokenType.OPEN_PAREN)
+
         val params = mutableListOf<Parameter>()
+        var postFirstParam = false
         while(canPeek() && peek().type != TokenType.CLOSE_PAREN) {
+            if (postFirstParam) expectAndConsume(TokenType.COMMA)
             val type = expectAndConsume(TokenType.TYPE).lexme
             val identifier = expectAndConsume(TokenType.IDENTIFIER).lexme
             params.add(Parameter(identifier = identifier, type = type))
+            postFirstParam = true
         }
+
         expectAndConsume(TokenType.CLOSE_PAREN)
         expectAndConsume(TokenType.COLON)
         val type = expectAndConsume(TokenType.TYPE).lexme

@@ -36,6 +36,7 @@ data class FunctionStatement(
         return builder.toString()
     }
 }
+data class ReturnStatement(val expression: Expression) : Statement()
 
 data class Parameter(val identifier: String, val type: String)
 
