@@ -48,7 +48,19 @@ class TreeGen (
         }
         expectAndConsume(TokenType.CLOSE_PAREN)
         expectAndConsume(TokenType.COLON)
-        return FunctionStatement(identifier = identifier, parameters = params, statements = statements, inline = false )
+        val type = expectAndConsume(TokenType.TYPE).lexme
+        expectAndConsume(TokenType.OPEN_CURLY)
+        val statements = mutableListOf<Statement>()
+        while(canPeek()) {
+            if (peek().type == TokenType.CLOSE_CURLY) {
+                break
+            }
+            val statement = parseStatement()
+            statements.add(statement)
+        }
+        expectAndConsume(TokenType.CLOSE_CURLY)
+        return FunctionStatement(identifier = identifier, parameters = params, statements = statements,
+                                inline = false, returnType = type )
     }
 
     private fun parseReAssignStatement(): SetVariableStatement {

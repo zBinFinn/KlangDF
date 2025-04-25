@@ -1,10 +1,8 @@
-num i = 3;
-log(i);
-i = 5 + 3;
-log(i);
-
-while(i < 10) {
-    raw "PA SendMessage(NUM(" + i + "))";
+fun main(): num {
+    num i = 3;
+    log(i);
+    i = 5 + 3;
+    log(i);
 }
 
 inline fun print(string str): Unit {

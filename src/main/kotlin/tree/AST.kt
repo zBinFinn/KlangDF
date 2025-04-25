@@ -20,8 +20,22 @@ data class CreateVariableStatement(val type: String, val identifier: String, val
 data class SetVariableStatement(val identifier: String, val expression: Expression) : Statement()
 data class ExpressionStatement(val expression: Expression) : Statement()
 data class LogStatement(val expression: Expression) : Statement()
-data class FunctionStatement(val identifier: String, val parameters: List<Parameter>, val statements: List<Statement>,
-                             val inline: Boolean) : Statement()
+data class FunctionStatement(
+    val identifier: String, val parameters: List<Parameter>, val statements: List<Statement>,
+    val inline: Boolean, val returnType: String
+) : Statement() {
+    override fun toString(): String {
+        val builder = StringBuilder()
+        builder.append("Function: $identifier( $parameters ) returns $returnType and inline: $inline {\n")
+        var indent: Int
+        for (statement in statements) {
+            indent = 4
+            builder.append(" ".repeat(indent) + statement.toString() + "\n")
+        }
+        builder.append("}\n")
+        return builder.toString()
+    }
+}
 
 data class Parameter(val identifier: String, val type: String)
 
