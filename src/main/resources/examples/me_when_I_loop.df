@@ -1,0 +1,12 @@
+num i = 3;
+log(i);
+i = 5 + 3;
+log(i);
+
+while(i < 10) {
+    raw "PA SendMessage(NUM(" + i + "))";
+}
+
+inline fun print(string str): Unit {
+    raw "PA SendMessage(STRING(" + str + "))";
+}
