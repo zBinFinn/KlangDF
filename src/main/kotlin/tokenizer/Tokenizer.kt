@@ -98,6 +98,7 @@ class Tokenizer(
             '!' to TokenType.EXCLAM,
             ':' to TokenType.COLON,
             ',' to TokenType.COMMA,
+            '&' to TokenType.AMPERSAND,
         )
         val keywords = mapOf<String, TokenType>(
             "for" to TokenType.K_FOR,
@@ -105,6 +106,7 @@ class Tokenizer(
             "log" to TokenType.K_LOG,
             "fun" to TokenType.K_FUN,
             "return" to TokenType.K_RETURN,
+            "inline" to TokenType.K_INLINE,
         )
         val types = setOf<String>(
             "num", "vec", "string", "text"

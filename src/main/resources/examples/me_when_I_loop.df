@@ -1,7 +1,12 @@
-fun sum(num num1, num num2): num {
-    return num1 + num2
+fun main() {
+    num x = 0;
+    sum(x, 5, 7);
 }
 
-inline fun print(string str): Unit {
+fun sum(&num out, num num1, num num2) {
+    out = num1 + num2;
+}
+
+inline fun print(string str) {
     raw "PA SendMessage(STRING(" + str + "))";
 }

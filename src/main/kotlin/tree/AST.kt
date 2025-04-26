@@ -20,25 +20,28 @@ data class CreateVariableStatement(val type: String, val identifier: String, val
 data class SetVariableStatement(val identifier: String, val expression: Expression) : Statement()
 data class ExpressionStatement(val expression: Expression) : Statement()
 data class LogStatement(val expression: Expression) : Statement()
+data class RawCodeStatement(val expression: Expression): Statement()
+data class CallFunctionStatement(val identifier: String, val parameters: List<Expression>): Statement()
+
 data class FunctionStatement(
     val identifier: String, val parameters: List<Parameter>, val statements: List<Statement>,
-    val inline: Boolean, val returnType: String
+    val inline: Boolean
 ) : Statement() {
     override fun toString(): String {
         val builder = StringBuilder()
-        builder.append("Function: $identifier( $parameters ) returns $returnType and inline: $inline {\n")
+        builder.append("Function: $identifier( $parameters ) and inline: $inline {\n")
         var indent: Int
         for (statement in statements) {
             indent = 4
             builder.append(" ".repeat(indent) + statement.toString() + "\n")
         }
-        builder.append("}\n")
+        builder.append("  }\n")
         return builder.toString()
     }
 }
-data class ReturnStatement(val expression: Expression) : Statement()
+class ReturnStatement : Statement()
 
-data class Parameter(val identifier: String, val type: String)
+data class Parameter(val identifier: String, val type: String, val reference: Boolean)
 
 sealed class Expression : ASTNode()
 data class Identifier(val name: String) : Expression()

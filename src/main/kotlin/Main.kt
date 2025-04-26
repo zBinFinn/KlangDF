@@ -1,11 +1,9 @@
 package org.example
 
+import java.io.File
+
 fun main() {
-    val code = """
-        fun sum(num num1, num num2): num {
-            return num1 + num2
-        }
-    """.trimIndent()
+    val code = File("src/main/resources/examples/me_when_I_loop.df").readText()
 
     val compiler = Compiler(code)
     val compiled = compiler.compile()

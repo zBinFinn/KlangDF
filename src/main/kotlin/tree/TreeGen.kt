@@ -29,21 +29,50 @@ class TreeGen (
                 if (canPeek(2) && peek(1).type == TokenType.EQUALS) {
                     return parseReAssignStatement()
                 }
+                if (canPeek(2) && peek(1).type == TokenType.OPEN_PAREN) {
+                    return parseCallFunctionStatement()
+                }
                 return SetVariableStatement("Error", NumberLiteral(5.0))
             }
             TokenType.K_LOG -> parseLogStatement()
             TokenType.K_FUN -> parseFunctionStatement()
             TokenType.K_RETURN -> parseReturnStatement()
+            TokenType.K_INLINE -> {
+                expectAndConsume(TokenType.K_INLINE)
+                parseFunctionStatement(true)
+            }
+            TokenType.K_RAW -> parseRawStatement()
             else -> parseExpressionStatement()
         }
     }
 
+    private fun parseCallFunctionStatement(): CallFunctionStatement {
+        val identifier = expectAndConsume(TokenType.IDENTIFIER).lexme
+        expectAndConsume(TokenType.OPEN_PAREN)
+        var beyondFirstArg = false
+        val expressions = mutableListOf<Expression>()
+        while (canPeek() && peek().type != TokenType.CLOSE_PAREN) {
+            if (beyondFirstArg) {
+                expectAndConsume(TokenType.COMMA)
+            }
+            beyondFirstArg = true
+            expressions.add(parseExpression())
+        }
+        expectAndConsume(TokenType.CLOSE_PAREN)
+        expectAndConsume(TokenType.SEMI_COLON)
+        return CallFunctionStatement(identifier, expressions)
+    }
+    private fun parseRawStatement(): RawCodeStatement {
+        expectAndConsume(TokenType.K_RAW)
+        val statement = RawCodeStatement(parseExpression())
+        expectAndConsume(TokenType.SEMI_COLON)
+        return statement
+    }
     private fun parseReturnStatement(): ReturnStatement {
         expectAndConsume(TokenType.K_RETURN)
-        val expression = parseExpression()
-        return ReturnStatement(expression)
+        return ReturnStatement()
     }
-    private fun parseFunctionStatement(): FunctionStatement {
+    private fun parseFunctionStatement(isInline: Boolean = false): FunctionStatement {
         expectAndConsume(TokenType.K_FUN)
         val identifier = expectAndConsume(TokenType.IDENTIFIER).lexme
         expectAndConsume(TokenType.OPEN_PAREN)
@@ -52,15 +81,17 @@ class TreeGen (
         var postFirstParam = false
         while(canPeek() && peek().type != TokenType.CLOSE_PAREN) {
             if (postFirstParam) expectAndConsume(TokenType.COMMA)
+            val isRef = if (peek().type == TokenType.AMPERSAND) {
+                consume()
+                true
+            } else false
             val type = expectAndConsume(TokenType.TYPE).lexme
             val identifier = expectAndConsume(TokenType.IDENTIFIER).lexme
-            params.add(Parameter(identifier = identifier, type = type))
+            params.add(Parameter(identifier = identifier, type = type, reference = isRef))
             postFirstParam = true
         }
 
         expectAndConsume(TokenType.CLOSE_PAREN)
-        expectAndConsume(TokenType.COLON)
-        val type = expectAndConsume(TokenType.TYPE).lexme
         expectAndConsume(TokenType.OPEN_CURLY)
         val statements = mutableListOf<Statement>()
         while(canPeek()) {
@@ -72,7 +103,7 @@ class TreeGen (
         }
         expectAndConsume(TokenType.CLOSE_CURLY)
         return FunctionStatement(identifier = identifier, parameters = params, statements = statements,
-                                inline = false, returnType = type )
+                                inline = isInline)
     }
 
     private fun parseReAssignStatement(): SetVariableStatement {

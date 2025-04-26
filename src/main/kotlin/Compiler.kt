@@ -26,7 +26,8 @@ class Compiler(
         println(program)
         println()
 
-        val compiled = "Hi"
+        val parser = Parser(program)
+        val compiled = parser.parse()
         println("Compiled Code:")
         println(compiled)
         return compiled

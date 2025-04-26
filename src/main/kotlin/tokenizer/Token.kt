@@ -10,9 +10,9 @@ enum class TokenType {
 
     /** Keywords **/
     K_FOR, K_RAW, K_LOG,
-    K_FUN, K_RETURN,
+    K_FUN, K_RETURN, K_INLINE,
 
-    SEMI_COLON, COLON, COMMA,
+    SEMI_COLON, COLON, COMMA, AMPERSAND,
 
     OPEN_PAREN, CLOSE_PAREN,
     OPEN_CURLY, CLOSE_CURLY,
